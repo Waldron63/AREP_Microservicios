@@ -28,7 +28,7 @@ public class PostMapper {
                 .message(dto.getMessage())
                 .likes(dto.getLikes());
         if (dto.getUserId() != null) {
-            builder.user(new User(dto.getUserId(), null));
+            builder.user(new User(dto.getUserId(), null, null));
         } else {
             builder.user(null);
         }
