@@ -2,6 +2,7 @@ package edu.escuelaing.AREP_Microservicios.controller;
 
 import edu.escuelaing.AREP_Microservicios.service.StreamService;
 import edu.escuelaing.AREP_Microservicios.utils.DTO.StreamDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,7 @@ import java.util.List;
 @RequestMapping("/streams")
 public class StreamController {
 
+    @Autowired
     private final StreamService streamService;
 
     public StreamController(StreamService streamService) {

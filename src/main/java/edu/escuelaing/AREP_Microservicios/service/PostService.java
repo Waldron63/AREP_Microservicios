@@ -6,6 +6,7 @@ import edu.escuelaing.AREP_Microservicios.model.Post;
 import edu.escuelaing.AREP_Microservicios.model.User;
 import edu.escuelaing.AREP_Microservicios.repository.PostRepository;
 import edu.escuelaing.AREP_Microservicios.utils.mappers.PostMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 @Service
 public class PostService {
 
+    @Autowired
     private final PostRepository postRepository;
     private final PostMapper postMapper;
     private final UserRepository userRepository;

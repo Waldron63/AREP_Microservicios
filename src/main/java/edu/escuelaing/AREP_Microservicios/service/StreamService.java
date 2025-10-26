@@ -4,6 +4,7 @@ import edu.escuelaing.AREP_Microservicios.model.Stream;
 import edu.escuelaing.AREP_Microservicios.repository.StreamRepository;
 import edu.escuelaing.AREP_Microservicios.utils.DTO.StreamDTO;
 import edu.escuelaing.AREP_Microservicios.utils.mappers.StreamMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 @Service
 public class StreamService {
 
+    @Autowired
     private final StreamRepository streamRepository;
     private final StreamMapper streamMapper;
 

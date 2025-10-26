@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>🌸 MicroStream 🌸</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header class="main-header">
+    <h1>🌸 MicroStream 🌸</h1>
+    <p>💕 Your network of happy micro thoughts 💕</p>
+</header>
+
+<div class="app">
+    <section id="authSection" class="card auth-card">
+        <h2>Log In</h2>
+        <br>
+        <input type="text" id="loginUsername" placeholder="Username" />
+        <input type="password" id="loginPassword" placeholder="Password" />
+        <div class="row">
+            <button id="btnLogin" class="primary">Log In</button>
+        </div>
+        <br>
+        <hr>
+        <br>
+        <p>Don't have an account?</p>
+        <br>
+        <button id="btnShowRegister" class="secondary">Sign Up</button>
+        <p id="authMsg" class="small muted"></p>
+    </section>
+
+    <section id="registerSection" class="card auth-card hidden">
+        <h2>Create a New Account</h2>
+        <br>
+        <input type="text" id="registerUsername" placeholder="Username" />
+        <input type="password" id="registerPassword" placeholder="Password" />
+        <div class="row">
+            <button id="btnRegister" class="primary">Sign Up</button>
+            <button id="btnShowLogin" class="secondary">Back</button>
+        </div>
+        <p id="registerMsg" class="small muted"></p>
+    </section>
+
+    <main id="mainApp" class="hidden">
+        <div class="row topbar">
+            <div class="left">
+                <h2>Hello, <span id="currentUser"></span> 💕</h2>
+            </div>
+            <div class="right">
+                <button id="btnLogout" class="danger">Log Out</button>
+            </div>
+        </div>
+
+        <section class="compose card">
+            <textarea id="postText" maxlength="140" placeholder="What's happening?" rows="3"></textarea>
+            <div class="row between">
+                <span id="charCount">140</span>
+                <button id="btnPost" class="primary">Post</button>
+            </div>
+            <p id="postMsg" class="small muted"></p>
+        </section>
+
+        <section class="stream card">
+            <div class="row between">
+                <h2>Public Stream 🌷</h2>
+                <div>
+                    <button id="btnRefresh" class="secondary">Refresh</button>
+                    <button id="btnAuto" class="secondary">Auto: OFF</button>
+                </div>
+            </div>
+            <br>
+            <div id="stream" class="stream-list"></div>
+        </section>
+    </main>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
