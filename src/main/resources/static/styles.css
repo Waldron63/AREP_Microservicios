@@ -1,0 +1,165 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Poppins", system-ui, sans-serif;
+    background: linear-gradient(to bottom right, #ffe4ef, #ffeaf7, #fff5fa);
+    color: #333;
+    min-height: 100vh;
+
+    /* Center everything perfectly */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+}
+
+.main-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.main-header h1 {
+    font-size: 2rem;
+    color: #ff69b4;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.main-header p {
+    font-size: 1rem;
+    color: #d16b92;
+    margin-top: 4px;
+}
+
+.app {
+    width: 100%;
+    max-width: 450px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(255, 105, 180, 0.2);
+    padding: 24px;
+    margin-bottom: 20px;
+    width: 100%;
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+}
+
+.auth-card {
+    text-align: center;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1.5px solid #ffcce0;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    font-size: 14px;
+    outline: none;
+    background: #fff8fb;
+}
+
+input:focus, textarea:focus {
+    border-color: #ff8dc7;
+    box-shadow: 0 0 4px rgba(255, 143, 188, 0.4);
+}
+
+button {
+    background: #ff69b4;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s ease;
+}
+
+button:hover {
+    background: #ff489a;
+}
+
+button.primary {
+    background: #ff69b4;
+}
+
+button.secondary {
+    background: #ffd1e8;
+    color: #a03e6f;
+}
+
+button.secondary:hover {
+    background: #ffc0de;
+}
+
+button.danger {
+    background: #ff6b8a;
+}
+
+.stream {
+    width: 100%;
+}
+
+.post {
+    background: #fff5fa;
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 1px solid #ffe1ec;
+}
+
+.muted {
+    color: #999;
+    font-size: 12px;
+}
+
+.like-btn {
+    background: none;
+    border: none;
+    color: #ff4b87;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 15px;
+    margin-top: 6px;
+}
+
+.like-btn:hover {
+    opacity: 0.7;
+}
+
+.hidden {
+    display: none;
+}
+
+.row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+}
+
+.row.between {
+    justify-content: space-between;
+}
+
+.topbar {
+    margin-bottom: 20px;
+}
+
+.small {
+    font-size: 0.85em;
+    margin-top: 5px;
+}
