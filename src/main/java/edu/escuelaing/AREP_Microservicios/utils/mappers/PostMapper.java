@@ -1,5 +1,6 @@
 package edu.escuelaing.AREP_Microservicios.utils.mappers;
 
+import edu.escuelaing.AREP_Microservicios.repository.UserRepository;
 import edu.escuelaing.AREP_Microservicios.utils.DTO.PostDTO;
 import edu.escuelaing.AREP_Microservicios.model.Post;
 import edu.escuelaing.AREP_Microservicios.model.User;
@@ -26,12 +27,8 @@ public class PostMapper {
         Post.PostBuilder builder = Post.builder()
                 .id(dto.getId())
                 .message(dto.getMessage())
-                .likes(dto.getLikes());
-        if (dto.getUserId() != null) {
-            builder.user(new User(dto.getUserId(), null, null));
-        } else {
-            builder.user(null);
-        }
+                .likes(dto.getLikes())
+                .user(null);
         return builder.build();
     }
 }
