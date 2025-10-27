@@ -24,7 +24,6 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    
     public List<UserDTO> getAllUser() {
         List<User> users = userRepository.findAll();
         List<UserDTO> userReturn = new ArrayList<>();
@@ -35,13 +34,11 @@ public class UserService {
         
     }
 
-    
     public UserDTO getUser(Long id) {
         Optional<User> user = userRepository.findById(id);
         return toDTO(user.get());
     }
 
-    
     public UserDTO createUser(UserDTO userDTO) {
         User user = toEntity(userDTO);
         userRepository.save(user);
@@ -55,7 +52,4 @@ public class UserService {
     public User toEntity(UserDTO userDTO) {
         return new User(userDTO.getId(), userDTO.getUsername(), userDTO.getPassword());
     }
-    
-
-    
 }

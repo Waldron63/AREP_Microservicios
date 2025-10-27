@@ -17,14 +17,24 @@ import org.springframework.web.bind.annotation.*;
  * @author juan
  */
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class UserController {
 
     @Autowired
     private UserService userService;
 
+    @PostMapping("/register")
+    public ResponseEntity<?>  createUser(@RequestBody UserDTO user){
+        try {
+            UserDTO userR = userService.createUser(user);
+            return ResponseEntity.ok().body(userR);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Not created user");
+        }
+    }
+
     @GetMapping("/all")
-    public ResponseEntity<?> getUsers(){
+    public ResponseEntity<?> getAll(){
         try {
             List<UserDTO> users =  userService.getAllUser();
             return ResponseEntity.ok().body(users);
@@ -34,22 +44,12 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getUser(@RequestParam Long id){
+    public ResponseEntity<?> getById(@RequestParam Long id){
         try {
             UserDTO user = userService.getUser(id);
             return ResponseEntity.ok().body(user);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Not found user");
-        }
-    }
-
-    @PostMapping("/register")
-    public ResponseEntity<?>  getUser(@RequestBody UserDTO user){
-        try {
-            UserDTO userR = userService.createUser(user);
-            return ResponseEntity.ok().body(userR);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Not created user");
         }
     }
     

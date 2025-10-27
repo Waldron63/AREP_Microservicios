@@ -19,6 +19,7 @@ public class PostService {
     @Autowired
     private final PostRepository postRepository;
     private final PostMapper postMapper;
+    @Autowired
     private final UserRepository userRepository;
 
     public PostService(PostRepository postRepository, PostMapper postMapper, UserRepository userRepository) {

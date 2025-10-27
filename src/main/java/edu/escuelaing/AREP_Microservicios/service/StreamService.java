@@ -1,6 +1,8 @@
 package edu.escuelaing.AREP_Microservicios.service;
 
+import edu.escuelaing.AREP_Microservicios.model.Post;
 import edu.escuelaing.AREP_Microservicios.model.Stream;
+import edu.escuelaing.AREP_Microservicios.repository.PostRepository;
 import edu.escuelaing.AREP_Microservicios.repository.StreamRepository;
 import edu.escuelaing.AREP_Microservicios.utils.DTO.StreamDTO;
 import edu.escuelaing.AREP_Microservicios.utils.mappers.StreamMapper;
@@ -18,9 +20,13 @@ public class StreamService {
     private final StreamRepository streamRepository;
     private final StreamMapper streamMapper;
 
-    public StreamService(StreamRepository streamRepository, StreamMapper streamMapper) {
+    @Autowired
+    private final PostRepository postRepository;
+
+    public StreamService(StreamRepository streamRepository, StreamMapper streamMapper, PostRepository postRepository) {
         this.streamRepository = streamRepository;
         this.streamMapper = streamMapper;
+        this.postRepository = postRepository;
     }
 
     public StreamDTO createStream(StreamDTO dto) {
@@ -48,6 +54,30 @@ public class StreamService {
         });
     }
 
+    /**
+     * Añade un post existente a un stream existente si ambos existen y el post no está ya en la lista.
+     * @param streamId id del stream
+     * @param postId id del post
+     * @return Optional con el StreamDTO actualizado si ambos existen, Optional.empty() si alguno no existe.
+     */
+    public Optional<StreamDTO> addPostToStream(Long streamId, Long postId) {
+        Optional<Stream> maybeStream = streamRepository.findById(streamId);
+        Optional<Post> maybePost = postRepository.findById(postId);
+        if (maybeStream.isEmpty() || maybePost.isEmpty()) {
+            return Optional.empty();
+        }
+        Stream stream = maybeStream.get();
+        Post post = maybePost.get();
+        boolean alreadyPresent = stream.getPosts().stream().anyMatch(p -> p.getId() != null && p.getId().equals(post.getId()));
+        if (!alreadyPresent) {
+            stream.getPosts().add(post);
+            Stream saved = streamRepository.save(stream);
+            return Optional.of(streamMapper.toDTO(saved));
+        }
+        // si ya estaba presente, devolvemos el stream sin cambios
+        return Optional.of(streamMapper.toDTO(stream));
+    }
+
     public boolean deleteStream(Long id) {
         if (streamRepository.existsById(id)) {
             streamRepository.deleteById(id);
@@ -56,4 +86,3 @@ public class StreamService {
         return false;
     }
 }
-

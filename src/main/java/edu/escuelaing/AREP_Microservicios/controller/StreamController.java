@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/streams")
+@RequestMapping("/api/streams")
 public class StreamController {
 
     @Autowired
@@ -45,6 +45,13 @@ public class StreamController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @PostMapping("/{streamId}/posts/{postId}")
+    public ResponseEntity<StreamDTO> addPostToStream(@PathVariable Long streamId, @PathVariable Long postId) {
+        return streamService.addPostToStream(streamId, postId)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         boolean deleted = streamService.deleteStream(id);
@@ -52,4 +59,3 @@ public class StreamController {
         return ResponseEntity.notFound().build();
     }
 }
-

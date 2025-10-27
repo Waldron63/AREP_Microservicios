@@ -26,7 +26,7 @@ document.getElementById("btnRegister").onclick = async () => {
     }
 
     try {
-        const res = await fetch(`${API_BASE}/users/register`, {
+        const res = await fetch(`${API_BASE}/api/users/register`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ id: null, username, password })
@@ -57,7 +57,7 @@ document.getElementById("btnLogin").onclick = async () => {
     }
 
     try {
-        const res = await fetch(`${API_BASE}/users/all`);
+        const res = await fetch(`${API_BASE}/api/users/all`);
         usersCache = await res.json();
         const found = usersCache.find(u => u.username === username && u.password === password);
 
@@ -103,7 +103,7 @@ document.getElementById("btnPost").onclick = async () => {
     }
 
     try {
-        const res = await fetch(`${API_BASE}/posts`, {
+        const res = await fetch(`${API_BASE}/api/posts`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -134,7 +134,7 @@ async function loadPosts() {
     streamDiv.innerHTML = "<p>Loading posts...</p>";
 
     try {
-        const res = await fetch(`${API_BASE}/posts`);
+        const res = await fetch(`${API_BASE}/api/posts`);
         const posts = await res.json();
 
         if (!Array.isArray(posts) || posts.length === 0) {
@@ -143,7 +143,7 @@ async function loadPosts() {
         }
 
         if (!usersCache.length) {
-            const uRes = await fetch(`${API_BASE}/users/all`);
+            const uRes = await fetch(`${API_BASE}/api/users/all`);
             usersCache = await uRes.json();
         }
 
@@ -169,7 +169,7 @@ async function loadPosts() {
 
 async function likePost(id) {
     try {
-        const res = await fetch(`${API_BASE}/posts/${id}`);
+        const res = await fetch(`${API_BASE}/api/posts/${id}`);
         const post = await res.json();
 
         const updatedPost = {
@@ -177,7 +177,7 @@ async function likePost(id) {
             likes: (post.likes ?? 0) + 1
         };
 
-        await fetch(`${API_BASE}/posts/${id}`, {
+        await fetch(`${API_BASE}/api/posts/${id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(updatedPost)

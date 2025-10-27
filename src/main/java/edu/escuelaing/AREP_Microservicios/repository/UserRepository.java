@@ -7,10 +7,13 @@ package edu.escuelaing.AREP_Microservicios.repository;
 import edu.escuelaing.AREP_Microservicios.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 /**
  *
  * @author juan
  */
 public interface UserRepository extends JpaRepository<User, Long>{
-    
+
+    Optional<User> findByName(String username);
 }
