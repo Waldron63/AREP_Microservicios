@@ -1,8 +1,8 @@
-const API_BASE = "http://localhost:8080";
+const API_BASE = "http://localhost:8080/api";
 let currentUser = null;
-let autoRefresh = false;
-let autoInterval = null;
 let usersCache = [];
+let streamsCache = [];
+let currentStream = null;
 
 function show(sectionId) {
     ["authSection", "registerSection", "mainApp"].forEach(id =>
@@ -26,19 +26,16 @@ document.getElementById("btnRegister").onclick = async () => {
     }
 
     try {
-        const res = await fetch(`${API_BASE}/api/users/register`, {
+        const res = await fetch(`${API_BASE}/users/register`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ id: null, username, password })
         });
 
-        if (res.ok) {
-            msg.textContent = "User registered successfully! You can now log in.";
-            msg.style.color = "green";
-        } else {
-            msg.textContent = "Error while registering user.";
-            msg.style.color = "red";
-        }
+        msg.textContent = res.ok
+            ? "User registered successfully! You can now log in."
+            : "Error while registering user.";
+        msg.style.color = res.ok ? "green" : "red";
     } catch {
         msg.textContent = "Connection error with the server.";
         msg.style.color = "red";
@@ -57,7 +54,7 @@ document.getElementById("btnLogin").onclick = async () => {
     }
 
     try {
-        const res = await fetch(`${API_BASE}/api/users/all`);
+        const res = await fetch(`${API_BASE}/users/all`);
         usersCache = await res.json();
         const found = usersCache.find(u => u.username === username && u.password === password);
 
@@ -65,7 +62,7 @@ document.getElementById("btnLogin").onclick = async () => {
             currentUser = found;
             document.getElementById("currentUser").textContent = currentUser.username;
             show("mainApp");
-            loadPosts();
+            loadStreams();
         } else {
             msg.textContent = "Incorrect username or password.";
             msg.style.color = "red";
@@ -78,21 +75,143 @@ document.getElementById("btnLogin").onclick = async () => {
 
 document.getElementById("btnLogout").onclick = () => {
     currentUser = null;
+    currentStream = null;
     show("authSection");
 };
 
-const postText = document.getElementById("postText");
-const charCount = document.getElementById("charCount");
-postText.addEventListener("input", () => {
-    charCount.textContent = 140 - postText.value.length;
-});
+async function loadStreams() {
+    const streamDiv = document.getElementById("stream");
+    streamDiv.innerHTML = "<p>Loading threads...</p>";
+
+    try {
+        const res = await fetch(`${API_BASE}/streams`);
+        streamsCache = await res.json();
+
+        if (!streamsCache.length) {
+            streamDiv.innerHTML = "<p>No threads yet. Create one below!</p>";
+            return;
+        }
+
+        streamDiv.innerHTML = streamsCache
+            .map(
+                s => `
+      <div class="post">
+        <h3>${s.name}</h3>
+        <p class="muted">${s.postIds?.length || 0} posts</p>
+        <button class="secondary" onclick="openStream(${s.id})">Open Thread</button>
+      </div>
+    `
+            )
+            .join("");
+    } catch {
+        streamDiv.innerHTML = "<p>Error while loading threads.</p>";
+    }
+}
+
+document.getElementById("btnCreateStream").onclick = async () => {
+    const name = prompt("Enter a title for your new thread:");
+    if (!name) return;
+
+    try {
+        const res = await fetch(`${API_BASE}/streams`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: null, name, postIds: [] })
+        });
+
+        if (res.ok) {
+            loadStreams();
+        } else {
+            alert("Error creating thread");
+        }
+    } catch {
+        alert("Connection error while creating thread");
+    }
+};
+
+window.openStream = async function (id) {
+    currentStream = streamsCache.find(s => s.id === id);
+    const streamDiv = document.getElementById("stream");
+    streamDiv.innerHTML = `
+    <h2>🧵 ${currentStream.name}</h2>
+    <div id="postsList"></div>
+    <br><button class="secondary" onclick="backToStreams()">← Back</button>
+  `;
+    loadPostsForStream();
+};
+
+function backToStreams() {
+    currentStream = null;
+    loadStreams();
+}
+
+async function loadPostsForStream() {
+    const postsList = document.getElementById("postsList");
+    postsList.innerHTML = "<p>Loading posts...</p>";
+
+    if (!currentStream.postIds || currentStream.postIds.length === 0) {
+        postsList.innerHTML = "<p>No posts in this thread yet.</p>";
+        return;
+    }
+
+    try {
+        const res = await fetch(`${API_BASE}/posts`);
+        const allPosts = await res.json();
+        const posts = allPosts.filter(p => currentStream.postIds.includes(p.id));
+
+        if (!usersCache.length) {
+            const uRes = await fetch(`${API_BASE}/users/all`);
+            usersCache = await uRes.json();
+        }
+
+        postsList.innerHTML = posts
+            .reverse()
+            .map(p => {
+                const username = usersCache.find(u => u.id === p.userId)?.username ?? "anon";
+                const message = p.message ?? "(empty)";
+                return `
+          <div class="post">
+            <p><strong>@${username}</strong>: ${message}</p>
+            <small class="muted">❤️ ${p.likes ?? 0}</small>
+            <br>
+            <button class="like-btn" onclick="likePost(${p.id})">❤️ Like</button>
+          </div>
+        `;
+            })
+            .join("");
+    } catch {
+        postsList.innerHTML = "<p>Error loading posts.</p>";
+    }
+}
+
+window.likePost = async function (id) {
+    try {
+        const res = await fetch(`${API_BASE}/posts/${id}`);
+        const post = await res.json();
+        const updated = { ...post, likes: (post.likes ?? 0) + 1 };
+
+        await fetch(`${API_BASE}/posts/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(updated)
+        });
+        loadPostsForStream();
+    } catch (err) {
+        console.error(err);
+    }
+};
 
 document.getElementById("btnPost").onclick = async () => {
-    const message = postText.value.trim();
+    const message = document.getElementById("postText").value.trim();
     const msg = document.getElementById("postMsg");
 
     if (!currentUser) {
-        msg.textContent = "You must be logged in to post.";
+        msg.textContent = "You must be logged in.";
+        msg.style.color = "red";
+        return;
+    }
+    if (!currentStream) {
+        msg.textContent = "Select or create a thread first.";
         msg.style.color = "red";
         return;
     }
@@ -103,7 +222,7 @@ document.getElementById("btnPost").onclick = async () => {
     }
 
     try {
-        const res = await fetch(`${API_BASE}/api/posts`, {
+        const res = await fetch(`${API_BASE}/posts`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -113,92 +232,50 @@ document.getElementById("btnPost").onclick = async () => {
                 userId: currentUser.id
             })
         });
-        if (res.ok) {
-            msg.textContent = "Successfully posted!";
-            msg.style.color = "green";
-            postText.value = "";
-            charCount.textContent = 140;
-            loadPosts();
-        } else {
-            msg.textContent = "Error while posting.";
-            msg.style.color = "red";
-        }
-    } catch {
-        msg.textContent = "⚠Server connection error.";
+
+        if (!res.ok) throw new Error("Post failed");
+        const newPost = await res.json();
+
+        const streamPostRes = await fetch(`${API_BASE}/streams/${currentStream.id}/posts/${newPost.id}`, {
+            method: "POST"
+        });
+
+        if (!streamPostRes.ok) throw new Error("Failed to add post to thread");
+
+        currentStream = await (await fetch(`${API_BASE}/streams/${currentStream.id}`)).json();
+
+        document.getElementById("postText").value = "";
+        msg.textContent = "Posted!";
+        msg.style.color = "green";
+        loadPostsForStream();
+    } catch (err) {
+        console.error(err);
+        msg.textContent = "Error posting.";
         msg.style.color = "red";
     }
 };
 
-async function loadPosts() {
-    const streamDiv = document.getElementById("stream");
-    streamDiv.innerHTML = "<p>Loading posts...</p>";
-
+document.getElementById("btnRefresh").onclick = async () => {
     try {
-        const res = await fetch(`${API_BASE}/api/posts`);
-        const posts = await res.json();
-
-        if (!Array.isArray(posts) || posts.length === 0) {
-            streamDiv.innerHTML = "<p>No posts yet.</p>";
-            return;
+        if (currentStream) {
+            currentStream = await (await fetch(`${API_BASE}/streams/${currentStream.id}`)).json();
+            loadPostsForStream();
+        } else {
+            loadStreams();
         }
-
-        if (!usersCache.length) {
-            const uRes = await fetch(`${API_BASE}/api/users/all`);
-            usersCache = await uRes.json();
-        }
-
-        streamDiv.innerHTML = posts
-            .reverse()
-            .map(p => {
-                const user = usersCache.find(u => u.id === p.userId);
-                const username = user ? user.username : "anon";
-                return `
-          <div class="post">
-            <p><strong>@${username}</strong>: ${p.message ?? ""}</p>
-            <small class="muted">🕒 just now</small>
-            <br>
-            <button class="like-btn" onclick="likePost(${p.id}, ${p.likes ?? 0})">❤️ ${p.likes ?? 0}</button>
-          </div>
-        `;
-            })
-            .join("");
-    } catch {
-        streamDiv.innerHTML = "<p>Error while loading stream.</p>";
-    }
-}
-
-async function likePost(id) {
-    try {
-        const res = await fetch(`${API_BASE}/api/posts/${id}`);
-        const post = await res.json();
-
-        const updatedPost = {
-            ...post,
-            likes: (post.likes ?? 0) + 1
-        };
-
-        await fetch(`${API_BASE}/api/posts/${id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(updatedPost)
-        });
-
-        loadPosts();
     } catch (err) {
-        console.error("Error while liking post", err);
-    }
-}
-window.likePost = likePost;
-
-document.getElementById("btnRefresh").onclick = loadPosts;
-document.getElementById("btnAuto").onclick = function () {
-    autoRefresh = !autoRefresh;
-    this.textContent = `Auto: ${autoRefresh ? "ON" : "OFF"}`;
-    if (autoRefresh) {
-        autoInterval = setInterval(loadPosts, 5000);
-    } else {
-        clearInterval(autoInterval);
+        console.error(err);
+        alert("Error refreshing data.");
     }
 };
+
+const postText = document.getElementById("postText");
+const charCount = document.getElementById("charCount");
+
+postText.addEventListener("input", () => {
+    const remaining = 140 - postText.value.length;
+    charCount.textContent = remaining >= 0 ? remaining : 0;
+});
+
 
 show("authSection");

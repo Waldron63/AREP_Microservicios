@@ -13,6 +13,7 @@
 </header>
 
 <div class="app">
+
     <section id="authSection" class="card auth-card">
         <h2>Log In</h2>
         <br>
@@ -21,9 +22,7 @@
         <div class="row">
             <button id="btnLogin" class="primary">Log In</button>
         </div>
-        <br>
-        <hr>
-        <br>
+        <br><hr><br>
         <p>Don't have an account?</p>
         <br>
         <button id="btnShowRegister" class="secondary">Sign Up</button>
@@ -52,8 +51,16 @@
             </div>
         </div>
 
+        <section class="card">
+            <div class="row between">
+                <h2>🧵 Threads</h2>
+                <button id="btnCreateStream" class="primary">➕ New Thread</button>
+            </div>
+            <p class="small muted">Create a new thread or open an existing one to start posting.</p>
+        </section>
+
         <section class="compose card">
-            <textarea id="postText" maxlength="140" placeholder="What's happening?" rows="3"></textarea>
+            <textarea id="postText" maxlength="140" placeholder="Write something inside a thread..." rows="3"></textarea>
             <div class="row between">
                 <span id="charCount">140</span>
                 <button id="btnPost" class="primary">Post</button>
@@ -63,10 +70,9 @@
 
         <section class="stream card">
             <div class="row between">
-                <h2>Public Stream 🌷</h2>
+                <h2>Public Threads 🌷</h2>
                 <div>
                     <button id="btnRefresh" class="secondary">Refresh</button>
-                    <button id="btnAuto" class="secondary">Auto: OFF</button>
                 </div>
             </div>
             <br>
