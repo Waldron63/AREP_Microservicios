@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:8080/api";
+const API_BASE = "https://jtnkb1qozh.execute-api.us-east-1.amazonaws.com/api";
 let currentUser = null;
 let usersCache = [];
 let streamsCache = [];
@@ -236,8 +236,13 @@ document.getElementById("btnPost").onclick = async () => {
         if (!res.ok) throw new Error("Post failed");
         const newPost = await res.json();
 
-        const streamPostRes = await fetch(`${API_BASE}/streams/${currentStream.id}/posts/${newPost.id}`, {
-            method: "POST"
+        const streamPostRes = await fetch(`${API_BASE}/streams/add`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                postId: newPost.id,
+                streamId: currentStream.id
+            })
         });
 
         if (!streamPostRes.ok) throw new Error("Failed to add post to thread");

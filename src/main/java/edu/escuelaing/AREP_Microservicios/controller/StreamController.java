@@ -1,6 +1,7 @@
 package edu.escuelaing.AREP_Microservicios.controller;
 
 import edu.escuelaing.AREP_Microservicios.service.StreamService;
+import edu.escuelaing.AREP_Microservicios.utils.DTO.PostToStreamDTO;
 import edu.escuelaing.AREP_Microservicios.utils.DTO.StreamDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -45,9 +46,9 @@ public class StreamController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/{streamId}/posts/{postId}")
-    public ResponseEntity<StreamDTO> addPostToStream(@PathVariable Long streamId, @PathVariable Long postId) {
-        return streamService.addPostToStream(streamId, postId)
+    @PostMapping("/add")
+    public ResponseEntity<StreamDTO> addPostToStream(@RequestBody PostToStreamDTO dto) {
+        return streamService.addPostToStream(dto.getStreamId(), dto.getPostId())
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }

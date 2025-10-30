@@ -18,7 +18,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 public class CorsConfig {
 
     private static final String COGNITO_REGION = "us-east-1";
-    private static final String USER_POOL_ID = "us-east-1_rX17j92oo";
+    private static final String USER_POOL_ID = "50t8nm6jesjb8l1i8rlquk8v1g";
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -38,19 +38,12 @@ public class CorsConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:8080/", "*"));
+        configuration.setAllowedOrigins(List.of("http://localhost:8080/", "https://twitter-microservices.s3.us-east-1.amazonaws.com", "*"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "*"));
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
-    }
-
-    @Bean
-    public JwtDecoder jwtDecoder() {
-        String jwkSetUri = "https://cognito-idp." + COGNITO_REGION + ".amazonaws.com/"
-                + USER_POOL_ID + "/.well-known/jwks.json";
-        return NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build();
     }
 }
